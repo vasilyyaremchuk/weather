@@ -8,10 +8,11 @@ class WeatherService
     private string $apiUrl;
     private string $logFile;
 
-    public function __construct(string $apiKey = 'b910d1691c5f4c24802170814251703')
+    public function __construct()
     {
-        $this->apiKey = $apiKey;
-        $this->apiUrl = "https://api.weatherapi.com/v1/current.json";
+        // ToDo: decide on $_ENV or getenv.
+        $this->apiKey = $_ENV['WEATHER_API_KEY'] ?? getenv('WEATHER_API_KEY');
+        $this->apiUrl = $_ENV['WEATHER_API_URL'] ?? getenv('WEATHER_API_URL');
         $this->logFile = dirname(__DIR__, 2) . '/var/log/weather_log.txt';
     }
 
