@@ -2,18 +2,24 @@
 
 namespace App\Service;
 
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+
 class WeatherService
 {
     private string $apiKey;
     private string $apiUrl;
     private string $logFile;
+    private HttpClientInterface $httpClient;
 
-    public function __construct()
+    public function __construct(HttpClientInterface $httpClient)
     {
-        // ToDo: decide on $_ENV or getenv.
         $this->apiKey = $_ENV['WEATHER_API_KEY'] ?? getenv('WEATHER_API_KEY');
         $this->apiUrl = $_ENV['WEATHER_API_URL'] ?? getenv('WEATHER_API_URL');
         $this->logFile = dirname(__DIR__, 2) . '/var/log/weather_log.txt';
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -24,40 +30,44 @@ class WeatherService
      */
     public function getWeatherData(string $city): array
     {
-        $url = "{$this->apiUrl}?key={$this->apiKey}&q={$city}";
-        
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-        $response = curl_exec($ch);
-        
-        if (curl_errno($ch)) {
-            $error = 'Curl error: ' . curl_error($ch);
-            curl_close($ch);
-            return ['error' => $error];
+        try {
+            $response = $this->httpClient->request('GET', $this->apiUrl, [
+                'query' => [
+                    'key' => $this->apiKey,
+                    'q' => $city,
+                ],
+                'timeout' => 30,
+            ]);
+
+            $data = $response->toArray();
+            
+            if (isset($data['error'])) {
+                return ['error' => $data['error']['message']];
+            }
+            
+            $result = [
+                'city' => $data['location']['name'],
+                'country' => $data['location']['country'],
+                'temperature' => $data['current']['temp_c'],
+                'condition' => $data['current']['condition']['text'],
+                'humidity' => $data['current']['humidity'],
+                'wind_speed' => $data['current']['wind_kph'],
+                'last_updated' => $data['current']['last_updated'],
+            ];
+            
+            $this->logWeatherData($result);
+            
+            return $result;
+            
+        } catch (ClientExceptionInterface $e) {
+            return ['error' => 'Client error: ' . $e->getMessage()];
+        } catch (ServerExceptionInterface $e) {
+            return ['error' => 'Server error: ' . $e->getMessage()];
+        } catch (TransportExceptionInterface $e) {
+            return ['error' => 'Transport error: ' . $e->getMessage()];
+        } catch (\Exception $e) {
+            return ['error' => 'Unexpected error: ' . $e->getMessage()];
         }
-        
-        curl_close($ch);
-        $data = json_decode($response, true);
-        
-        if (isset($data['error'])) {
-            return ['error' => $data['error']['message']];
-        }
-        
-        $result = [
-            'city' => $data['location']['name'],
-            'country' => $data['location']['country'],
-            'temperature' => $data['current']['temp_c'],
-            'condition' => $data['current']['condition']['text'],
-            'humidity' => $data['current']['humidity'],
-            'wind_speed' => $data['current']['wind_kph'],
-            'last_updated' => $data['current']['last_updated'],
-        ];
-        
-        $this->logWeatherData($result);
-        
-        return $result;
     }
 
     /**
