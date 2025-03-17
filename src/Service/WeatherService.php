@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
@@ -11,15 +12,17 @@ class WeatherService
 {
     private string $apiKey;
     private string $apiUrl;
-    private string $logFile;
     private HttpClientInterface $httpClient;
+    private LoggerInterface $logger;
 
-    public function __construct(HttpClientInterface $httpClient)
-    {
+    public function __construct(
+        HttpClientInterface $httpClient,
+        LoggerInterface $logger
+    ) {
         $this->apiKey = $_ENV['WEATHER_API_KEY'] ?? getenv('WEATHER_API_KEY');
         $this->apiUrl = $_ENV['WEATHER_API_URL'] ?? getenv('WEATHER_API_URL');
-        $this->logFile = dirname(__DIR__, 2) . '/var/log/weather_log.txt';
         $this->httpClient = $httpClient;
+        $this->logger = $logger;
     }
 
     /**
@@ -42,7 +45,12 @@ class WeatherService
             $data = $response->toArray();
             
             if (isset($data['error'])) {
-                return ['error' => $data['error']['message']];
+                $errorMessage = $data['error']['message'];
+                $this->logger->error('Weather API error', [
+                    'city' => $city,
+                    'error' => $errorMessage
+                ]);
+                return ['error' => $errorMessage];
             }
             
             $result = [
@@ -55,36 +63,39 @@ class WeatherService
                 'last_updated' => $data['current']['last_updated'],
             ];
             
-            $this->logWeatherData($result);
+            $this->logger->info('Weather data retrieved', [
+                'city' => $result['city'],
+                'temperature' => $result['temperature'],
+                'condition' => $result['condition']
+            ]);
             
             return $result;
             
         } catch (ClientExceptionInterface $e) {
+            $this->logger->error('Weather API client error', [
+                'city' => $city,
+                'error' => $e->getMessage()
+            ]);
             return ['error' => 'Client error: ' . $e->getMessage()];
         } catch (ServerExceptionInterface $e) {
+            $this->logger->error('Weather API server error', [
+                'city' => $city,
+                'error' => $e->getMessage()
+            ]);
             return ['error' => 'Server error: ' . $e->getMessage()];
         } catch (TransportExceptionInterface $e) {
+            $this->logger->error('Weather API transport error', [
+                'city' => $city,
+                'error' => $e->getMessage()
+            ]);
             return ['error' => 'Transport error: ' . $e->getMessage()];
         } catch (\Exception $e) {
+            $this->logger->critical('Unexpected error in weather service', [
+                'city' => $city,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return ['error' => 'Unexpected error: ' . $e->getMessage()];
         }
-    }
-
-    /**
-     * Log weather data to a file
-     *
-     * @param array $weatherData The weather data to log
-     * @return void
-     */
-    private function logWeatherData(array $weatherData): void
-    {
-        // Create log directory if it doesn't exist
-        $logDir = dirname($this->logFile);
-        if (!is_dir($logDir)) {
-            mkdir($logDir, 0777, true);
-        }
-
-        $logMessage = date('Y-m-d H:i:s') . " - Weather in {$weatherData['city']}: {$weatherData['temperature']}°C, {$weatherData['condition']}\n";
-        file_put_contents($this->logFile, $logMessage, FILE_APPEND);
     }
 }
