@@ -1,6 +1,12 @@
 # Weather API Service
 
+This simple application get the weather data from the API and display it.
+
 ## Installation
+
+First of all you need to get your API key from https://www.weatherapi.com/
+
+After that please copy `.env.example` to `.env` and add your API key.
 
 There is 2 options run the application
 
@@ -10,8 +16,6 @@ There is 2 options run the application
 $ composer install
 $ php bin/console server:run
 ```
-There is no Redis support in that case. 
-You can use native Symfony cache instead (file based).
 
 2. Using Docker
 
@@ -24,14 +28,6 @@ $ docker compose up --pull always -d --wait
 Open https://localhost in your favorite web browser and accept the auto-generated TLS certificate.
 
 Run `docker compose down --remove-orphans` to stop the Docker containers.
-
-In that case you can use Redis.
-Configure it in your .env file:
-```
-REDIS_URL=redis://redis:6379
-```
-
-
 
 ## Configuration
 
@@ -48,9 +44,6 @@ $ php bin/console app:weather:get [city]
 ```
 see [src/Command/WeatherCommand.php](src/Command/WeatherCommand.php)
 This command was done for the test purposes and is not used in the application.
-
-
-
 
 ### Some key points
 
@@ -75,7 +68,9 @@ $ php bin/phpunit tests/Service/WeatherServiceTest.php
 
 # Code Sniffer
 
-## Set code styandard
+To follow code standards we use Code Sniffer.
+
+## Set code standards
 
 ```
 $ vendor/bin/phpcs --config-set installed_paths vendor/escapestudios/symfony2-coding-standard
@@ -88,7 +83,7 @@ $ vendor/bin/phpcs --standard=Symfony src
 $ vendor/bin/phpcs --standard=Symfony tests
 ```
 
-## Fix the code sniffer
+## Automatic fix the code sniffer errors
 
 ```
 $ vendor/bin/phpcbf --standard=Symfony src
