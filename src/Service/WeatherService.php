@@ -13,6 +13,7 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Service for fetching weather information from external API.
@@ -25,6 +26,7 @@ class WeatherService
     private LoggerInterface $logger;
     private CacheInterface $cache;
     private int $cacheTtl;
+    private TranslatorInterface $translator;
 
     /**
      * Constructor.
@@ -33,13 +35,14 @@ class WeatherService
      * @param LoggerInterface     $logger     Logger for recording operations
      * @param CacheInterface      $cache      Cache for storing API responses
      */
-    public function __construct(HttpClientInterface $httpClient, LoggerInterface $logger, CacheInterface $cache)
+    public function __construct(HttpClientInterface $httpClient, LoggerInterface $logger, CacheInterface $cache, TranslatorInterface $translator)
     {
         $this->apiKey = $_ENV['WEATHER_API_KEY'] ?? getenv('WEATHER_API_KEY');
         $this->apiUrl = $_ENV['WEATHER_API_URL'] ?? getenv('WEATHER_API_URL');
         $this->httpClient = $httpClient;
         $this->logger = $logger;
         $this->cache = $cache;
+        $this->translator = $translator;
         // Cache weather data for 30 minutes by default, can be adjusted as needed
         $this->cacheTtl = (int) ($_ENV['WEATHER_CACHE_TTL'] ?? 1800);
     }
@@ -54,6 +57,12 @@ class WeatherService
      */
     public function getWeatherData(string $city, bool $forceRefresh = false): array
     {
+        // Validate city parameter
+        if (empty(trim($city))) {
+            $this->logger->error('Empty city parameter provided');
+            return ['error' => $this->translator->trans('weather.validation.city_required')];
+        }
+
         $cacheKey = 'weather_'.strtolower(preg_replace('/[^a-zA-Z0-9]/', '_', $city));
 
         // If force refresh, delete existing cache item

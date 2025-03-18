@@ -32,8 +32,22 @@ Run `docker compose down --remove-orphans` to stop the Docker containers.
 
 ## Architecture
 
+### WeatherService
+
 We use WeatherService to get weather data from the API.
 see [src/Service/WeatherService.php](src/Service/WeatherService.php)
+
+In the class WeatherService we use dependency injections to
+- HttpClientInterface - to make requests to the API
+- LoggerInterface - to log operations
+- CacheInterface - to cache API responses
+
+There we have 2 methods:
+
+- getWeatherData - public method to get weather data either from cache or API
+- fetchWeatherFromApi - private helper method to fetch weather data from the API
+
+### WeatherCommand
 
 We can request the service from the command line:
 
@@ -43,10 +57,22 @@ $ php bin/console app:weather:get [city]
 see [src/Command/WeatherCommand.php](src/Command/WeatherCommand.php)
 This command was done for the test purposes and is not used in the application.
 
+### WeatherController
+
+We can request the service from the web:
+see [src/Controller/WeatherController.php](src/Controller/WeatherController.php)
+
+We have 3 public methods:
+
+- index - main page with weather data
+- getWeatherApi - API endpoint for getting weather data for a specific city
+- rootRedirect - redirect root URL to the default locale version
+
 ### Some key points
 
 - We use Symfony HttpClient (symfony/http-client) to make requests to the API instead of Curl approach like we have in the original file.
 - To implement Logging we use Monolog package.
+- To implement Localisation we use Symfony Translator component.
 
 ## Logging
 
@@ -89,7 +115,7 @@ $ docker compose exec php vendor/bin/phpunit tests/Service/WeatherServiceTest.ph
 
 To follow code standards we use Code Sniffer.
 
-## Set code standards
+## Setup Php Code Sniffer
 
 ```
 $ composer require --dev squizlabs/php_codesniffer escapestudios/symfony2-coding-standard

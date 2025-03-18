@@ -10,3 +10,5 @@ weather:
     wind_speed: 'Wind Speed'
     last_updated: 'Last Updated'
   error: 'Error'
+  validation:
+    city_required: 'City parameter is required.'

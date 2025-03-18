@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Controller for handling weather-related requests.
@@ -21,6 +22,7 @@ class WeatherController extends AbstractController
 {
     private WeatherService $weatherService;
     private ParameterBagInterface $parameterBag;
+    private TranslatorInterface $translator;
 
     /**
      * Constructor.
@@ -28,10 +30,11 @@ class WeatherController extends AbstractController
      * @param WeatherService        $weatherService Weather service for fetching weather data
      * @param ParameterBagInterface $parameterBag   Parameter bag for accessing configuration
      */
-    public function __construct(WeatherService $weatherService, ParameterBagInterface $parameterBag)
+    public function __construct(WeatherService $weatherService, ParameterBagInterface $parameterBag, TranslatorInterface $translator)
     {
         $this->weatherService = $weatherService;
         $this->parameterBag = $parameterBag;
+        $this->translator = $translator;
     }
 
     #[Route('/', name: 'root_redirect')]
@@ -77,7 +80,20 @@ class WeatherController extends AbstractController
         ]);
     }
 
-    #[Route('/{_locale}/api/{city}', name: 'weather_api', methods: ['GET'], requirements: ['_locale' => 'en|uk'])]
+    #[Route('/api', name: 'weather_api_base', methods: ['GET'])]
+    /**
+     * Base API endpoint that returns an error when no city is provided.
+     *
+     * @param Request $request The request object
+     *
+     * @return Response JSON response with error message
+     */
+    public function getWeatherApiBase(Request $request): Response
+    {
+        return $this->json(['error' => 'City parameter is required.'], Response::HTTP_BAD_REQUEST);
+    }
+
+    #[Route('/api/{city}', name: 'weather_api', methods: ['GET'])]
     /**
      * API endpoint for getting weather data for a specific city.
      *
@@ -88,10 +104,6 @@ class WeatherController extends AbstractController
      */
     public function getWeatherApi(Request $request, string $city): Response
     {
-        // Set locale from request or .env
-        $locale = $request->attributes->get('_locale') ?? $this->parameterBag->get('app.locale');
-        $request->setLocale($locale);
-
         $weatherData = $this->weatherService->getWeatherData($city);
 
         return $this->json($weatherData);

@@ -10,3 +10,5 @@ weather:
     wind_speed: 'Швидкість вітру'
     last_updated: 'Останнє оновлення'
   error: 'Помилка'
+  validation:
+    city_required: 'Необхідно вказати місто.'
