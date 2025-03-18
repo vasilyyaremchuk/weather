@@ -64,15 +64,45 @@ see [src/Controller/WeatherController.php](src/Controller/WeatherController.php)
 
 We have 3 public methods:
 
-- index - main page with weather data
-- getWeatherApi - API endpoint for getting weather data for a specific city
-- rootRedirect - redirect root URL to the default locale version
+- rootRedirect '/' - redirect root URL to the default locale version
+- index '/{_locale}' - main page with weather data
+- getWeatherApi '/api/{city}' - API endpoint for getting weather data for a specific city
+- getWeatherApiBase '/api' - API endpoint for getting weather data for a specific city
+
+### ErrorController
+
+We need it to show some end user friendly error messages.
+see [src/Controller/ErrorController.php](src/Controller/ErrorController.php)
+
+There we use more consistent syntax for dependency injection:
+
+```
+public function __construct(private LoggerInterface $logger)
+{
+}
+```
+
+instead of
+
+```
+private LoggerInterface $logger;
+
+public function __construct(LoggerInterface $logger) 
+{
+    $this->logger = $logger;
+}
+```
 
 ### Some key points
 
 - We use Symfony HttpClient (symfony/http-client) to make requests to the API instead of Curl approach like we have in the original file.
 - To implement Logging we use Monolog package.
 - To implement Localisation we use Symfony Translator component.
+- To implement Caching we use Symfony Cache component.
+
+There is no overengineering here. And as the most complex pattern is the dependency injection. 
+
+We are trying to reuse the basic Symfony components to implement the must have features such as logging, localisation and caching.
 
 ## Logging
 
@@ -94,7 +124,22 @@ APP_LOCALE=en
 
 ## Service
 
-tests/Service/WeatherServiceTest.php with two test cases:
+As soon as there is no complex business logic in custom classes, but unit test designed to test internal logic inside classes the only one unit test example looks very basic. We emulate successful result from API and error result from API and test how the service handles them. To be sure that it make simple data transformation correctly. But the actual logic is inside that simple code:
+
+```
+$result = [
+    'city' => $data['location']['name'],
+    'country' => $data['location']['country'],
+    'temperature' => $data['current']['temp_c'],
+    'condition' => $data['current']['condition']['text'],
+    'humidity' => $data['current']['humidity'],
+    'wind_speed' => $data['current']['wind_kph'],
+    'last_updated' => $data['current']['last_updated'],
+];
+```
+see [tests/Service/WeatherServiceTest.php](tests/Service/WeatherServiceTest.php)
+
+### Unit tests
 
 - testGetWeatherDataSuccess: Tests successful weather data retrieval
 - testGetWeatherDataApiError: Tests error handling when the API returns an error
@@ -149,4 +194,3 @@ $ vendor/bin/phpcbf --standard=Symfony tests
 $ docker compose exec php vendor/bin/phpcbf --standard=Symfony src
 $ docker compose exec php vendor/bin/phpcbf --standard=Symfony tests
 ```
-
