@@ -2,6 +2,36 @@
 
 ## Installation
 
+There is 2 options run the application
+
+1. Natively 
+
+```
+$ composer install
+$ php bin/console server:run
+```
+There is no Redis support in that case. 
+You can use native Symfony cache instead (file based).
+
+2. Using Docker
+
+I use https://github.com/dunglas/symfony-docker approach.
+
+```
+$ docker compose build --no-cache
+$ docker compose up --pull always -d --wait
+```
+Open https://localhost in your favorite web browser and accept the auto-generated TLS certificate.
+
+Run `docker compose down --remove-orphans` to stop the Docker containers.
+
+In that case you can use Redis.
+Configure it in your .env file:
+```
+REDIS_URL=redis://redis:6379
+```
+
+
 
 ## Configuration
 
