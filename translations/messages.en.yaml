@@ -1,7 +1,7 @@
 weather:
   title: 'Weather Information'
   form:
-    placeholder: 'Enter city name'
+    placeholder: 'Enter city name in English'
     button: 'Get Weather'
   data:
     temperature: 'Temperature'

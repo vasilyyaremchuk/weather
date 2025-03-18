@@ -11,7 +11,7 @@
                     <h2 class="mb-0">{{ 'weather.title'|trans }}</h2>
                 </div>
                 <div class="card-body">
-                    <form method="post" action="{{ path('weather_get') }}" class="mb-4">
+                    <form method="post" action="{{ path('weather_index') }}" class="mb-4">
                         <div class="input-group">
                             <input type="text" name="city" class="form-control" placeholder="{{ 'weather.form.placeholder'|trans }}" value="{{ city }}" required>
                             <div class="input-group-append">

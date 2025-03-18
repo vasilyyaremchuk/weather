@@ -1,7 +1,7 @@
 weather:
   title: 'Інформація про погоду'
   form:
-    placeholder: 'Введіть назву міста'
+    placeholder: 'Введіть назву міста англійською'
     button: 'Отримати погоду'
   data:
     temperature: 'Температура'
