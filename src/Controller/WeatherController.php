@@ -10,9 +10,9 @@ use App\Service\WeatherService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Controller for handling weather-related requests.
@@ -40,9 +40,9 @@ class WeatherController extends AbstractController
      *
      * @param Request $request The request object
      *
-     * @return Response A RedirectResponse to the localized homepage
+     * @return RedirectResponse A redirect to the localized homepage
      */
-    public function rootRedirect(Request $request): Response
+    public function rootRedirect(Request $request): RedirectResponse
     {
         $defaultLocale = $this->parameterBag->get('app.locale');
 

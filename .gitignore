@@ -21,3 +21,8 @@
 
 # Ignore .DS_Store files
 .DS_Store
+
+###> squizlabs/php_codesniffer ###
+/.phpcs-cache
+/phpcs.xml
+###< squizlabs/php_codesniffer ###

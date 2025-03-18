@@ -11,6 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * Unit tests for WeatherService.
@@ -19,6 +20,7 @@ class WeatherServiceTest extends TestCase
 {
     private $httpClient;
     private $logger;
+    private $cache;
     private $weatherService;
 
     /**
@@ -28,12 +30,13 @@ class WeatherServiceTest extends TestCase
     {
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
+        $this->cache = $this->createMock(CacheInterface::class);
 
         // Set environment variables for testing
         putenv('WEATHER_API_KEY=test_api_key');
         putenv('WEATHER_API_URL=https://api.weatherapi.com/v1/current.json');
 
-        $this->weatherService = new WeatherService($this->httpClient, $this->logger);
+        $this->weatherService = new WeatherService($this->httpClient, $this->logger, $this->cache);
     }
 
     /**
@@ -44,6 +47,14 @@ class WeatherServiceTest extends TestCase
     public function testGetWeatherDataSuccess()
     {
         $mockResponse = $this->createMock(ResponseInterface::class);
+
+        // Mock cache behavior to simulate cache miss and force API call
+        $this->cache->expects($this->once())
+            ->method('get')
+            ->willReturnCallback(function ($key, $callback) {
+                return $callback($this->createMock('\Symfony\Contracts\Cache\ItemInterface'));
+            });
+
         $mockData = [
             'location' => [
                 'name' => 'London',
@@ -96,6 +107,14 @@ class WeatherServiceTest extends TestCase
     public function testGetWeatherDataApiError()
     {
         $mockResponse = $this->createMock(ResponseInterface::class);
+
+        // Mock cache behavior to simulate cache miss and force API call
+        $this->cache->expects($this->once())
+            ->method('get')
+            ->willReturnCallback(function ($key, $callback) {
+                return $callback($this->createMock('\Symfony\Contracts\Cache\ItemInterface'));
+            });
+
         $mockData = [
             'error' => [
                 'message' => 'Invalid API key',
