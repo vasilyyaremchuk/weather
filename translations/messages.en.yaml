@@ -1,0 +1,12 @@
+weather:
+  title: 'Weather Information'
+  form:
+    placeholder: 'Enter city name'
+    button: 'Get Weather'
+  data:
+    temperature: 'Temperature'
+    condition: 'Condition'
+    humidity: 'Humidity'
+    wind_speed: 'Wind Speed'
+    last_updated: 'Last Updated'
+  error: 'Error'

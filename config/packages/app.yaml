@@ -1,0 +1,2 @@
+parameters:
+    app.locale: '%env(APP_LOCALE)%'

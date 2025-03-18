@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Weather Information{% endblock %}
+{% block title %}{{ 'weather.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="container mt-5">
@@ -8,14 +8,14 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Weather Information</h2>
+                    <h2 class="mb-0">{{ 'weather.title'|trans }}</h2>
                 </div>
                 <div class="card-body">
                     <form method="post" action="{{ path('weather_get') }}" class="mb-4">
                         <div class="input-group">
-                            <input type="text" name="city" class="form-control" placeholder="Enter city name" value="{{ city }}" required>
+                            <input type="text" name="city" class="form-control" placeholder="{{ 'weather.form.placeholder'|trans }}" value="{{ city }}" required>
                             <div class="input-group-append">
-                                <button type="submit" class="btn btn-primary">Get Weather</button>
+                                <button type="submit" class="btn btn-primary">{{ 'weather.form.button'|trans }}</button>
                             </div>
                         </div>
                     </form>
@@ -23,7 +23,7 @@
                     {% if weatherData is not null %}
                         {% if weatherData.error is defined %}
                             <div class="alert alert-danger">
-                                Error: {{ weatherData.error }}
+                                {{ 'weather.error'|trans }}: {{ weatherData.error }}
                             </div>
                         {% else %}
                             <div class="card">
@@ -33,13 +33,13 @@
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <p><strong>Temperature:</strong> {{ weatherData.temperature }}°C</p>
-                                            <p><strong>Condition:</strong> {{ weatherData.condition }}</p>
-                                            <p><strong>Humidity:</strong> {{ weatherData.humidity }}%</p>
+                                            <p><strong>{{ 'weather.data.temperature'|trans }}:</strong> {{ weatherData.temperature }}°C</p>
+                                            <p><strong>{{ 'weather.data.condition'|trans }}:</strong> {{ weatherData.condition }}</p>
+                                            <p><strong>{{ 'weather.data.humidity'|trans }}:</strong> {{ weatherData.humidity }}%</p>
                                         </div>
                                         <div class="col-md-6">
-                                            <p><strong>Wind Speed:</strong> {{ weatherData.wind_speed }} km/h</p>
-                                            <p><strong>Last Updated:</strong> {{ weatherData.last_updated }}</p>
+                                            <p><strong>{{ 'weather.data.wind_speed'|trans }}:</strong> {{ weatherData.wind_speed }} km/h</p>
+                                            <p><strong>{{ 'weather.data.last_updated'|trans }}:</strong> {{ weatherData.last_updated }}</p>
                                         </div>
                                     </div>
                                 </div>

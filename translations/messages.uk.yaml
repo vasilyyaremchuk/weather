@@ -1,0 +1,12 @@
+weather:
+  title: 'Інформація про погоду'
+  form:
+    placeholder: 'Введіть назву міста'
+    button: 'Отримати погоду'
+  data:
+    temperature: 'Температура'
+    condition: 'Стан'
+    humidity: 'Вологість'
+    wind_speed: 'Швидкість вітру'
+    last_updated: 'Останнє оновлення'
+  error: 'Помилка'
