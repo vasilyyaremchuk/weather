@@ -55,11 +55,13 @@ $ vendor/bin/phpcs --config-set installed_paths vendor/escapestudios/symfony2-co
 
 ```
 $ vendor/bin/phpcs --standard=Symfony src
+$ vendor/bin/phpcs --standard=Symfony tests
 ```
 
 ## Fix the code sniffer
 
 ```
 $ vendor/bin/phpcbf --standard=Symfony src
+$ vendor/bin/phpcbf --standard=Symfony tests
 ```
 
