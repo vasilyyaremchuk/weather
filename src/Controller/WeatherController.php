@@ -29,6 +29,7 @@ class WeatherController extends AbstractController
      *
      * @param WeatherService        $weatherService Weather service for fetching weather data
      * @param ParameterBagInterface $parameterBag   Parameter bag for accessing configuration
+     * @param TranslatorInterface   $translator     Translator service for internationalization
      */
     public function __construct(WeatherService $weatherService, ParameterBagInterface $parameterBag, TranslatorInterface $translator)
     {

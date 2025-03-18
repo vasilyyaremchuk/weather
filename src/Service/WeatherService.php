@@ -34,6 +34,7 @@ class WeatherService
      * @param HttpClientInterface $httpClient HTTP client for making API requests
      * @param LoggerInterface     $logger     Logger for recording operations
      * @param CacheInterface      $cache      Cache for storing API responses
+     * @param TranslatorInterface $translator Translator service for internationalization
      */
     public function __construct(HttpClientInterface $httpClient, LoggerInterface $logger, CacheInterface $cache, TranslatorInterface $translator)
     {
@@ -60,6 +61,7 @@ class WeatherService
         // Validate city parameter
         if (empty(trim($city))) {
             $this->logger->error('Empty city parameter provided');
+
             return ['error' => $this->translator->trans('weather.validation.city_required')];
         }
 
