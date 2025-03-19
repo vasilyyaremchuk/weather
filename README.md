@@ -79,6 +79,10 @@ But in that case we need to handle with the API key or auth token and probably s
 
 The main page uses [templates/weather/index.html.twig](templates/weather/index.html.twig). This template is extended by [templates/base.html.twig](templates/base.html.twig).
 
+In the base.html.twig we use Bootstrap loaded externally to have some basic styling. But in the production case we should setup style compilation and minification in the application, say, with gulp or webpack.
+Also, we can use Tailwind CSS (see https://tailwindcss.com/docs/installation/framework-guides/symfony) or other CSS framework.
+And as the best practice we can setup Storybook to handle with UI components.
+
 ### ErrorController
 
 We need it to show some end user friendly error messages.
