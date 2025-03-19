@@ -35,12 +35,13 @@ Run `docker compose down --remove-orphans` to stop the Docker containers.
 ### WeatherService
 
 We use WeatherService to get weather data from the API.
-see [src/Service/WeatherService.php](src/Service/WeatherService.php)
+See [src/Service/WeatherService.php](src/Service/WeatherService.php)
 
 In the class WeatherService we use dependency injections to
 - HttpClientInterface - to make requests to the API
 - LoggerInterface - to log operations
 - CacheInterface - to cache API responses
+- TranslatorInterface - to translate messages
 
 There we have 2 methods:
 
@@ -59,7 +60,7 @@ We can request the service from the command line:
 ```
 $ php bin/console app:weather:get [city]
 ```
-see [src/Command/WeatherCommand.php](src/Command/WeatherCommand.php)
+See [src/Command/WeatherCommand.php](src/Command/WeatherCommand.php)
 This command was done for the test purposes and is not used in the application.
 
 ### WeatherController
@@ -80,8 +81,7 @@ But in that case we need to handle with the API key or auth token and probably s
 The main page uses [templates/weather/index.html.twig](templates/weather/index.html.twig). This template is extended by [templates/base.html.twig](templates/base.html.twig).
 
 In the base.html.twig we use Bootstrap loaded externally to have some basic styling. But in the production case we should setup style compilation and minification in the application, say, with gulp or webpack.
-Also, we can use Tailwind CSS (see https://tailwindcss.com/docs/installation/framework-guides/symfony) or other CSS framework.
-And as the best practice we can setup Storybook to handle with UI components.
+Also, we can use Tailwind CSS (see https://tailwindcss.com/docs/installation/framework-guides/symfony) or other CSS framework. And as the best practice we can setup Storybook to handle with UI components.
 
 ### ErrorController
 
@@ -119,6 +119,10 @@ The error page uses [templates/error/error.html.twig](templates/error/error.html
 There is no overengineering here. And as the most complex pattern is the dependency injection. 
 
 We are trying to reuse the basic Symfony components to implement the must have features such as logging, localisation and caching.
+
+### Assets
+
+We use Symfony Assets component to handle with assets. Just for the example the asset('images/logo.svg') was added in the base.html.twig template as a favicon and in the weather/index.html.twig template as a logo. Custom scripts and styles can be added in the same way.
 
 ## Logging
 
