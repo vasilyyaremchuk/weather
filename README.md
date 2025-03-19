@@ -72,7 +72,12 @@ We have 3 public methods:
 - rootRedirect '/' - redirect root URL to the default locale version
 - index '/{_locale}' - main page with weather data
 - getWeatherApi '/api/{city}' - API endpoint for getting weather data for a specific city
-- getWeatherApiBase '/api' - API endpoint for getting weather data for a specific city
+- getWeatherApiBase '/api' - API endpoint that returns an error when no city is provided
+
+There is a room to improve the code. We can add authorisation to the API endpoint.
+But in that case we need to handle with the API key or auth token and probably set up backend to handle with them.
+
+The main page uses [templates/weather/index.html.twig](templates/weather/index.html.twig). This template is extended by [templates/base.html.twig](templates/base.html.twig).
 
 ### ErrorController
 
@@ -97,6 +102,8 @@ public function __construct(LoggerInterface $logger)
     $this->logger = $logger;
 }
 ```
+
+The error page uses [templates/error/error.html.twig](templates/error/error.html.twig). This template is extended by [templates/base.html.twig](templates/base.html.twig).
 
 ### Some key points
 

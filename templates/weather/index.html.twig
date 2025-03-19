@@ -3,6 +3,22 @@
 {% block title %}{{ 'weather.title'|trans }}{% endblock %}
 
 {% block body %}
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <a class="navbar-brand" href="{{ path('weather_index') }}">{{ 'weather.title'|trans }}</a>
+        <div class="ms-auto">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ app.request.locale|upper }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                    <li><a class="dropdown-item{% if app.request.locale == 'en' %} active{% endif %}" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'en'})) }}">EN</a></li>
+                    <li><a class="dropdown-item{% if app.request.locale == 'uk' %} active{% endif %}" href="{{ path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')|merge({'_locale': 'uk'})) }}">UK</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">

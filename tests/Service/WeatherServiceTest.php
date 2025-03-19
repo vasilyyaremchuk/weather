@@ -90,9 +90,9 @@ class WeatherServiceTest extends TestCase
                 })
             )
             ->willReturn($mockResponse);
-        
+
         // We pass TRUE to force refresh to avoid cache.
-        $result = $this->weatherService->getWeatherData('London', TRUE);
+        $result = $this->weatherService->getWeatherData('London', true);
 
         $this->assertEquals('London', $result['city']);
         $this->assertEquals('UK', $result['country']);
@@ -143,7 +143,7 @@ class WeatherServiceTest extends TestCase
             );
 
         // We pass TRUE to force refresh to avoid cache.
-        $result = $this->weatherService->getWeatherData('London', TRUE);
+        $result = $this->weatherService->getWeatherData('London', true);
 
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Invalid API key', $result['error']);

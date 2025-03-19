@@ -48,7 +48,7 @@ class ErrorController extends AbstractController
             'trace' => $exception->getTraceAsString(),
         ]);
 
-        return $this->render('bundles/TwigBundle/Exception/error404.html.twig', [
+        return $this->render('error/error.html.twig', [
             'status_code' => $statusCode,
             'status_text' => Response::$statusTexts[$statusCode] ?? 'Unknown Error',
         ], new Response('', $statusCode));
