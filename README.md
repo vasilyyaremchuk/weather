@@ -47,6 +47,11 @@ There we have 2 methods:
 - getWeatherData - public method to get weather data either from cache or API
 - fetchWeatherFromApi - private helper method to fetch weather data from the API
 
+In the method getWeatherData we use forceRefresh parameter to bypass cache.
+We need it in Unit tests to test the business logic but not the cache.
+
+There is also TranslatorInterface - to translate messages. We use it to translate error messages. Only the first error message is translated as the example. It's a question does it make sense to translate error messages? I'm not 100% sure. In the real world project we would need to coordinate it with the stakeholders. But for that task it definitely out of the scope.
+
 ### WeatherCommand
 
 We can request the service from the command line:

@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Unit tests for WeatherService.
@@ -21,6 +22,7 @@ class WeatherServiceTest extends TestCase
     private $httpClient;
     private $logger;
     private $cache;
+    private $translator;
     private $weatherService;
 
     /**
@@ -31,12 +33,13 @@ class WeatherServiceTest extends TestCase
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->cache = $this->createMock(CacheInterface::class);
+        $this->translator = $this->createMock(TranslatorInterface::class);
 
         // Set environment variables for testing
         putenv('WEATHER_API_KEY=test_api_key');
         putenv('WEATHER_API_URL=https://api.weatherapi.com/v1/current.json');
 
-        $this->weatherService = new WeatherService($this->httpClient, $this->logger, $this->cache);
+        $this->weatherService = new WeatherService($this->httpClient, $this->logger, $this->cache, $this->translator);
     }
 
     /**
@@ -87,8 +90,9 @@ class WeatherServiceTest extends TestCase
                 })
             )
             ->willReturn($mockResponse);
-
-        $result = $this->weatherService->getWeatherData('London');
+        
+        // We pass TRUE to force refresh to avoid cache.
+        $result = $this->weatherService->getWeatherData('London', TRUE);
 
         $this->assertEquals('London', $result['city']);
         $this->assertEquals('UK', $result['country']);
@@ -138,7 +142,8 @@ class WeatherServiceTest extends TestCase
                 })
             );
 
-        $result = $this->weatherService->getWeatherData('London');
+        // We pass TRUE to force refresh to avoid cache.
+        $result = $this->weatherService->getWeatherData('London', TRUE);
 
         $this->assertArrayHasKey('error', $result);
         $this->assertEquals('Invalid API key', $result['error']);
