@@ -12,6 +12,14 @@ There is 2 options run the application
 
 1. Natively 
 
+To setup it in your system natively you need to have installed:
+
+- PHP 8.4.x
+- Composer 2.x
+
+It might work with php 8.2 and 8.3 but not tested.
+If you have lower version of PHP you can use Docker approach.
+
 ```
 $ composer install
 $ php bin/console server:run
