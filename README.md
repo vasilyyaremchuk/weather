@@ -124,6 +124,17 @@ public function __construct(LoggerInterface $logger)
 
 The error page uses [templates/error/error.html.twig](templates/error/error.html.twig). This template is extended by [templates/base.html.twig](templates/base.html.twig).
 
+####Improvements:
+Handle JSON Requests Properly:
+
+```
+if ($this->getRequest()->isXmlHttpRequest()) {
+    return $this->json(['error' => $exception->getMessage()], $statusCode);
+}
+```
+Use Symfony’s Built-in Exception Handling
+Instead of manually handling errors, Symfony’s ExceptionListener can catch and process them in a more robust way.
+
 ### Some key points
 
 - We use Symfony HttpClient (symfony/http-client) to make requests to the API instead of Curl approach like we have in the original file.
@@ -134,6 +145,16 @@ The error page uses [templates/error/error.html.twig](templates/error/error.html
 There is no overengineering here. And as the most complex pattern is the dependency injection. 
 
 We are trying to reuse the basic Symfony components to implement the must have features such as logging, localisation and caching.
+
+#### Service implementation improvements
+
+We can improve the services.yaml config for better performance:
+
+- Define critical services explicitly.
+- Disable autoconfigure globally and enable it selectively.
+- Limit the scope of service discovery.
+
+These changes can reduce processing time and memory usage
 
 ### Assets
 
