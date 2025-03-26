@@ -25,6 +25,13 @@ $ composer install
 $ php bin/console server:run
 ```
 
+You can use the other way:
+
+```
+$ composer install
+curl -sS https://get.symfony.com/cli/installer | bash
+$ symfony serve -d
+```
 2. Using Docker
 
 I use https://github.com/dunglas/symfony-docker approach.
