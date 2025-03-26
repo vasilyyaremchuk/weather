@@ -250,3 +250,13 @@ $ vendor/bin/phpcbf --standard=Symfony tests
 $ docker compose exec php vendor/bin/phpcbf --standard=Symfony src
 $ docker compose exec php vendor/bin/phpcbf --standard=Symfony tests
 ```
+
+# Possible Security issues
+
+## CSRF Protection
+
+Because we have a form on the page, we need to add CSRF protection.
+
+## CORS configuration
+
+We need to think about CORS configuration when it will be available publically. 
