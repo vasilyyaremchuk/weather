@@ -30,6 +30,7 @@
                 </div>
                 <div class="card-body">
                     <form method="post" action="{{ path('weather_index') }}" class="mb-4">
+                        <input type="hidden" name="_token" value="{{ csrf_token }}">
                         <div class="input-group">
                             <input type="text" name="city" class="form-control" placeholder="{{ 'weather.form.placeholder'|trans }}" value="{{ city }}" required>
                             <div class="input-group-append">

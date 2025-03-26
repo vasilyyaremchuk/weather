@@ -256,6 +256,14 @@ $ docker compose exec php vendor/bin/phpcbf --standard=Symfony tests
 ## CSRF Protection
 
 Because we have a form on the page, we need to add CSRF protection.
+It was implemented in WeatherController index method.
+see [src/Controller/WeatherController.php](src/Controller/WeatherController.php)
+
+Hidden field was added in the template:
+
+```
+<input type="hidden" name="_token" value="{{ csrf_token }}">
+```
 
 ## CORS configuration
 

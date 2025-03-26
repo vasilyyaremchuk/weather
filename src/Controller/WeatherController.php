@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -22,6 +24,7 @@ class WeatherController extends AbstractController
 {
     private WeatherService $weatherService;
     private ParameterBagInterface $parameterBag;
+    private CsrfTokenManagerInterface $csrfTokenManager;
     private TranslatorInterface $translator;
 
     /**
@@ -31,11 +34,16 @@ class WeatherController extends AbstractController
      * @param ParameterBagInterface $parameterBag   Parameter bag for accessing configuration
      * @param TranslatorInterface   $translator     Translator service for internationalization
      */
-    public function __construct(WeatherService $weatherService, ParameterBagInterface $parameterBag, TranslatorInterface $translator)
-    {
+    public function __construct(
+        WeatherService $weatherService,
+        ParameterBagInterface $parameterBag,
+        TranslatorInterface $translator,
+        CsrfTokenManagerInterface $csrfTokenManager
+    ) {
         $this->weatherService = $weatherService;
         $this->parameterBag = $parameterBag;
         $this->translator = $translator;
+        $this->csrfTokenManager = $csrfTokenManager;
     }
 
     #[Route('/', name: 'root_redirect')]
@@ -71,6 +79,11 @@ class WeatherController extends AbstractController
         $weatherData = null;
 
         if ($request->isMethod('POST')) {
+            $submittedToken = $request->request->get('_token');
+            if (!$this->csrfTokenManager->isTokenValid(new CsrfToken('weather_search', $submittedToken))) {
+                throw new InvalidCsrfTokenException('Invalid CSRF token');
+            }
+
             $city = $request->request->get('city', 'London');
             $weatherData = $this->weatherService->getWeatherData($city);
         }
@@ -78,6 +91,7 @@ class WeatherController extends AbstractController
         return $this->render('weather/index.html.twig', [
             'city' => $city,
             'weatherData' => $weatherData,
+            'csrf_token' => $this->csrfTokenManager->getToken('weather_search')->getValue(),
         ]);
     }
 
